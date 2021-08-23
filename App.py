@@ -6,14 +6,23 @@ from stravalib.client import Client
 class App:
 
     @staticmethod
-    def upload(activity):
+    def upload(filename):
         """ Uploads an activity to strava """
+
+        url = "https://www.strava.com/api/v3/uploads"
         token = App.get_token()
 
-        strava = Client()
-        strava.access_token = token
+        header = {"Authorization": "Bearer " + token}
+        param = {"file": f"new_activities\\{filename}", "data_type": "fit"}
 
-        upload = strava.upload_activity(activity_file=activity, data_type="fit")
+        requests.post(url, headers=header, params=param)
+
+        """token = App.get_token()
+
+        strava = Client()
+        strava.access_token = token    
+        
+        strava.upload_activity(activity_file=f"new_activities\\{filename}", data_type="fit")"""
 
 
     @staticmethod
@@ -54,12 +63,11 @@ class App:
 
     @staticmethod
     def get_new_activities():
-        """ Gets a new activity in directory """
+        """ Returns the filenames of new activities """
         new_activities = []
         for filename in os.listdir("new_activities"):
             if (filename.endswith(".fit")):
-                activity = open(f"new_activities\{filename}", "r", encoding="utf-8")
-                new_activities.append(activity)
+                new_activities.append(filename)
         return new_activities
 
 
@@ -69,12 +77,11 @@ class App:
         pass
 
 
-#activity = App.get_new_activities()[0]
-#print(activity)
+filename = App.get_new_activities()[0]
 
-#App.upload(activity)
+App.upload(filename)
 
-App.get_user_config()
+#App.get_user_config()
 
 
 
