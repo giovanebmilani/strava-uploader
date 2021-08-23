@@ -1,0 +1,1 @@
+An activity uploader in .fit format for Strava
