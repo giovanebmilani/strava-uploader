@@ -4,12 +4,12 @@ import requests
 import json
 from stravalib.client import Client
 
-class App:
+class Uploader:
 
     @staticmethod
     def upload(filename):
         """ Uploads an activity to strava """
-        token = App.get_token()
+        token = Uploader.get_token()
 
         url = "https://www.strava.com/api/v3/uploads"
         header = {"Authorization": "Bearer " + token}
@@ -27,7 +27,7 @@ class App:
         """ Gets the auth token """
         url = "https://www.strava.com/api/v3/oauth/token"
         
-        payload = App.get_user_config()
+        payload = Uploader.get_user_config()
         payload["grant_type"]= "refresh_token"
         payload["f"] = "json"
        
@@ -42,8 +42,7 @@ class App:
             with open("config.json") as file:
                 config = json.load(file)
         except:
-            error = Exception("Set up settings first, use 'config' for more information.")
-            exit(error)
+            raise ("Set up settings first, use 'config' for more information.")
 
         else:
             try:
@@ -52,8 +51,7 @@ class App:
                 config["refresh_token"]
 
             except Exception as error:
-                print("Insufficient info provided")
-                exit(f"{error} needs to be configured")
+                raise (f"Insufficient info provided. {error} needs to be configured")
             
             else:
                 return config
@@ -74,13 +72,25 @@ class App:
         shutil.move(f"new_activities\\{filename}", "uploaded_activities")
 
 
-filename = App.get_new_activities()[0]
+def main():
+    filename = Uploader.get_new_activities()[0]
+    print(filename)
+    #Uploader.upload(filename)
+    #Uploader.move_file(filename)
 
-#App.move_file(filename)
+    """new_activities_filenames = Uploader.get_new_activities()
 
-App.upload(filename)
+    for filename in new_activities_filenames:
+        try:
+            Uploader.upload(filename)
+        except Exception as error:
+            exit(error)"""
+    
 
-#App.get_user_config()
+if __name__ == "__main__":
+    main()
+
+
 
 
 
