@@ -1,5 +1,6 @@
 from flask import Flask, request
 import requests
+import os
 
 server = Flask(__name__)
 
@@ -18,8 +19,20 @@ def token_exchange(auth_code):
     res = requests.post('https://www.strava.com/oauth/token?client_id='+client_id+'&client_secret='+client_secret+'&code='+auth_code+'&grant_type=authorization_code')
     return upload(res.json()["access_token"])
 
+
 def upload(token):
     return token
 
+
+def get_new_activities():
+    new_activities = []
+    for filename in os.listdir('activities'):
+        if (filename.endswith('.fit')):
+            new_activities.append(filename)
+    return new_activities
+
+
 if __name__ == '__main__':
+    new_activities = get_new_activities()
+    
     server.run()
