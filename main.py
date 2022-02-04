@@ -1,29 +1,15 @@
-import requests
-import json
+import webbrowser
 
+client_id = '69535'
+client_secret = 'bac246d8c108ae3a6f7682be186105d513e33727'
+redirect_uri = 'http://127.0.0.1:5000/authorized'
+scopes = 'activity:write,read_all'
 
-
-def upload(filename):
-    pass
-
+auth_url = 'http://www.strava.com/oauth/authorize?client_id='+client_id+'&response_type=code&redirect_uri='+redirect_uri+'&approval_prompt=force&scope='+scopes
 
 def authenticate():
-    
-    url = "https://www.strava.com/oauth/authorize"
-
-    data = {}
-    data["client_secret"] = 69535
-    data["redirect_uri"] = "developers.strava.com"
-    data["response_type"] = "code"
-    data["scope"] = "activity:write"
-
-    response = requests.get(url, data=data)
-    return response
+    webbrowser.open(auth_url)
 
 
-def token_exchange():
-    pass
-
-
-
-print(authenticate().json())
+if __name__ == '__main__':
+    authenticate()
