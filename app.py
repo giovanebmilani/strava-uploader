@@ -1,7 +1,7 @@
 from flask import Flask, request
 import requests
 import os
-import time
+import shutil
 
 server = Flask(__name__)
 
@@ -25,34 +25,31 @@ def token_exchange(auth_code):
 def upload(token):
     new_activities = get_new_activities()
     if len(new_activities) > 0:
-        print(f'Were found {len(new_activities)} new activities to upload.<br>Uploading ...')
-        #responses = []
         for activity in new_activities:
             header = {'Authorization': 'Bearer ' + token}
             param = {'activity_type': 'ride', 'data_type': 'fit'}
             file = {'file': activity}
             res = requests.post(upload_url, headers=header, data=param, files=file)
             print(res.json())
-        return 'Checking...'#check(responses, token)
+        move_files()
+        return (f'Were found {len(new_activities)} new activities to upload.<br>Uploading ...')
     return 'No activities to upload.'
 
-"""def check(responses, token):
-    time.sleep(3)
-    header = {'Authorization': 'Bearer ' + token}
-    for res in responses:
-        params = {'id': res.json()['id_str']}
-        upload = requests.get(url=f'https://www.strava.com/api/v3/uploads', headers=header, data=params)
-        print(upload.json())
-    return 'Checking...'"""
 
 def get_new_activities():
     new_activities = []
     for filename in os.listdir('activities'):
         if (filename.endswith('.fit')):
-            #new_activities.append(filename)
             activity = open(f'activities/{filename}', 'rb')
             new_activities.append(activity)
     return new_activities
+
+
+def move_files():
+    for filename in os.listdir('activities'):
+        if (filename.endswith('.fit')):
+            shutil.move(f'activities\\{filename}', 'activities\\uploaded')
+
 
 if __name__ == '__main__':
     server.run()
