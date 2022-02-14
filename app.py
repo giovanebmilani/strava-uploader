@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from config import config_by_name
-from datetime import datetime, timedelta
+import time
 import requests
 import os
 import shutil
@@ -8,14 +8,37 @@ import shutil
 app = Flask(__name__)
 config = config_by_name['local']
 
-
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/auth')
 def auth():
-    return redirect(_get_auth_url())
+    auth_status = _get_auth_status()
+    if auth_status == 'access token expired':
+        res = _refresh_token()
+        return render_template('authenticating.html', result=res)
+    elif auth_status == 'no authentication':
+        return redirect(_get_auth_url())
+    else:
+        return render_template('authenticating.html', result=True)
+
+def _get_auth_status():
+    if os.getenv('TOKEN_EXPIRES_AT') is not None:
+        if time.time() > int(os.environ['TOKEN_EXPIRES_AT']):
+            return 'access token expired'
+        return 'authenticated'
+    return 'no authentication'
+
+def _refresh_token():
+    try:
+        res = requests.post(config.STRAVA_TOKEN_REQUEST_URL+'?client_id='+config.CLIENT_ID+'&client_secret='+os.getenv('USER_REFRESH_TOKEN')+'&grant_type=refresh_token'+config.CLIENT_SECRET+'&refresh_token')
+        os.environ['USER_ACCESS_TOKEN'] = str(res.json()['access_token'])
+        os.environ['USER_REFRESH_TOKEN'] = str(res.json()['refresh_token'])
+        os.environ['TOKEN_EXPIRES_AT'] = str(res.json()['expires_at'])
+        return True
+    except:
+        return False
 
 def _get_auth_url():
     scopes = 'activity:write,read_all,activity:read_all'
