@@ -1,23 +1,21 @@
 from flask import Flask, request
+from config import config_by_name
 import requests
 import os
 import shutil
 
-server = Flask(__name__)
+app = Flask(__name__)
+config = config_by_name['local']
 
-client_id = '69535'
-client_secret = 'bac246d8c108ae3a6f7682be186105d513e33727'
 
-upload_url = 'https://www.strava.com/api/v3/uploads'
-
-@server.get('/authorized')
+@app.get('/authorized')
 def get_auth_code():
     auth_code = request.args.get('code')
     return token_exchange(auth_code)
      
 
 def token_exchange(auth_code):
-    res = requests.post('https://www.strava.com/oauth/token?client_id='+client_id+'&client_secret='+client_secret+'&code='+auth_code+'&grant_type=authorization_code')
+    res = requests.post(config.STRAVA_TOKEN_REQUEST_URL+'?client_id='+config.CLIENT_ID+'&client_secret='+config.CLIENT_SECRET+'&code='+auth_code+'&grant_type=authorization_code')
     token = res.json()['access_token']
     return upload(token)
 
@@ -29,7 +27,7 @@ def upload(token):
             header = {'Authorization': 'Bearer ' + token}
             param = {'activity_type': 'ride', 'data_type': 'fit'}
             file = {'file': activity}
-            res = requests.post(upload_url, headers=header, data=param, files=file)
+            res = requests.post(config.STRAVA_UPLOAD_URL, headers=header, data=param, files=file)
             print(res.json())
         #move_files()
         return (f'Were found {len(new_activities)} new activities to upload.<br>Uploading ...')
@@ -52,4 +50,4 @@ def move_files():
 
 
 if __name__ == '__main__':
-    server.run()
+    app.run()
