@@ -31,7 +31,7 @@ def upload(token):
             file = {'file': activity}
             res = requests.post(upload_url, headers=header, data=param, files=file)
             print(res.json())
-        move_files()
+        #move_files()
         return (f'Were found {len(new_activities)} new activities to upload.<br>Uploading ...')
     return 'No activities to upload.'
 
