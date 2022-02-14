@@ -4,14 +4,18 @@
 <div class="container">
     <hr/><br/><br/><br/>
     <center>
-        <h4>Authenticating...</h4>
+        <h3>Authenticating...</h3>
 
         {% if result == True %}
             <p>Authentication was successfull.</p>
-            <button type="button"><strong>Upload</strong></button>
+            <form action="/activities" method="get">
+                <input type="submit" value="Activities"/>
+            </form>
         {% else %}
             <p>There was an error during the authentication.</p>
-            <button type="button"><strong>Authenticate</strong></button>
+            <form action="/auth" method="get">
+                <input type="submit" value="Authenticate your account"/>
+            </form>
         {% endif %}
 
     </center>

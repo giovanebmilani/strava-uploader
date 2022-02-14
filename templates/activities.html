@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container">
+    <hr/><br/><br/><br/>
+    <center>
+        
+        {% for activity in activities %}
+            <p>{{ activity }}</p>
+            <form action="/upload" method="post">
+                <input type="submit" value="Upload"/>
+            </form>
+        {% endfor %}
+
+    </center>
+</div>
+{% endblock %}

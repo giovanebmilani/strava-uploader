@@ -59,34 +59,37 @@ def _token_exchange(auth_code):
     except:
         return False
     
-def upload(token):
-    new_activities = get_new_activities()
-    if len(new_activities) > 0:
-        for activity in new_activities:
-            header = {'Authorization': 'Bearer ' + token}
-            param = {'activity_type': 'ride', 'data_type': 'fit'}
-            file = {'file': activity}
-            res = requests.post(config.STRAVA_UPLOAD_URL, headers=header, data=param, files=file)
-            print(res.json())
-        #move_files()
-        return (f'Were found {len(new_activities)} new activities to upload.<br>Uploading ...')
-    return 'No activities to upload.'
+@app.route('/activities')
+def activities():
+    activities = _get_new_activities_filenames()
+    return render_template('activities.html', activities=activities)
 
-
-def get_new_activities():
+def _get_new_activities_filenames():
     new_activities = []
     for filename in os.listdir('activities'):
         if (filename.endswith('.fit')):
-            activity = open(f'activities/{filename}', 'rb')
-            new_activities.append(activity)
+            new_activities.append(filename)
     return new_activities
 
+@app.post('/upload')
+def upload(filename):
+    activity = _get_activity_file(filename)
+    header = {'Authorization': 'Bearer ' + os.getenv('USER_ACCESS_TOKEN') }
+    param = {'activity_type': 'ride', 'data_type': 'fit'}
+    file = {'file': activity}
+    res = requests.post(config.STRAVA_UPLOAD_URL, headers=header, data=param, files=file)
+    print(res.json())
 
-def move_files():
-    for filename in os.listdir('activities'):
-        if (filename.endswith('.fit')):
+def _get_activity_file(filename):
+    for file in os.listdir('activities'):
+        if (file == filename):
+            activity = open(f'activities/{filename}', 'rb')
+    return activity
+
+def _move_file(filename):
+    for file in os.listdir('activities'):
+        if (file == filename):
             shutil.move(f'activities\\{filename}', 'activities\\uploaded')
-
 
 if __name__ == '__main__':
     app.run()
