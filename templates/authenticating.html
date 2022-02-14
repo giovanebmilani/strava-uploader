@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container">
+    <hr/><br/><br/><br/>
+    <center>
+        <h4>Authenticating...</h4>
+
+        {% if result == True %}
+            <p>Authentication was successfull.</p>
+        {% else %}
+            <p>There was an error during the authentication.</p>
+        {% endif %}
+
+    </center>
+</div>
+{% endblock %}
