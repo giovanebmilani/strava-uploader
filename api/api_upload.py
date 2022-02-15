@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint
+from flask import render_template, request, Blueprint
 from app import config
 import requests
 import os
@@ -22,13 +22,16 @@ def _get_new_activities_filenames():
     return new_activities
 
 @api_upload.route('/upload', methods=['POST'])
-def upload(filename):
-    activity = _get_activity_file(filename)
+def upload():
+    activity = _get_activity_file(request.form.get('filename'))
     header = {'Authorization': 'Bearer ' + os.getenv('USER_ACCESS_TOKEN') }
-    param = {'name': 'nome', 'activity_type': 'ride', 'data_type': 'fit'}
+    param = {'name': request.form.get('name'), 'description': request.form.get('description'), 'activity_type': request.form.get('activity_type'), 'data_type': 'fit'}
     file = {'file': activity}
     res = requests.post(config.STRAVA_UPLOAD_URL, headers=header, data=param, files=file)
-    _check_upload(res.json()['id_str'])
+    status = _check_upload(res.json()['id_str'])
+    uploaded.append({'file': request.form.get('filename'), 'status': status})
+    activity.close()
+    _move_file(request.form.get('filename'))
     return activities()
 
 def _get_activity_file(filename):
@@ -42,11 +45,9 @@ def _check_upload(upload_id):
     while True:
         upload = requests.get(config.STRAVA_UPLOAD_URL+'/'+upload_id, headers=header)
         if upload.json()['status'] == 'Your activity is ready.':
-            uploaded.append(upload.json()['status'])
-            return
+            return upload.json()['status']
         elif upload.json()['error'] is not None:
-            uploaded.append(upload.json()['error'])
-            return
+            return upload.json()['error']
         time.sleep(1.5)
 
 def _move_file(filename):

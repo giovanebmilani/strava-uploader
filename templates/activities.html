@@ -7,25 +7,35 @@
         
         {% for activity in uploaded %}
             <div class="activity" style="text-align: left; padding-left:500px; padding-right:500px">
-                <p>{{ uploaded }}</p>
+                <p><strong>{{ activity["file"] }}</strong> </p> 
+                <p> {{ activity["status"] }}</p>
+                <hr/>
             </div>
         {% endfor %}
 
         {% for activity in activities %}
             <div class="activity" style="text-align: left; padding-left:500px; padding-right:500px">
-                <form action="/upload" method="post">
+                <form action="/upload" method="post" style="display: inline">
                     <p><strong>{{ activity }}</strong></p>
-                    Name: <input autocomplete="off" autofocus name="name" placeholder="Activity name" type="text">
-                    Description: <input autocomplete="off" autofocus name="description" placeholder="Description" type="text">
-                    <select name="type">
+                    <input type="hidden" name="filename" value={{activity}}>
+
+                    <label for="name">Name:</label>
+                    <input autocomplete="off" autofocus name="name" placeholder="Activity name" type="text">
+                    <label for="description">Description:</label>
+                    <input autocomplete="off" autofocus name="description" placeholder="Description" type="text">
+                    <select name="activity_type">
                         <option disable selected>Activity type</option>
-                        <option>Bike ride</option>
-                        <option>Run</option>
-                        <option>Walk</option>
+                        <option value="ride">Ride</option>
+                        <option value="run">Run</option>
+                        <option value="walk">Walk</option>
                     </select>
-                    <input type="submit" value="Upload"/>
-                    <br/><br/><hr/>
+                    <input type="submit" value="Upload"/>  
                 </form>
+                <form action="/move-file" method="post" style="display: inline">
+                    <input type="hidden" name="filename" value={{activity}}>
+                    <input type="submit" value="Move file"/>
+                </form>
+                <br/><br/><hr/>
             </div>      
         {% endfor %}
 
