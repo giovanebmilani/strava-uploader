@@ -5,11 +5,28 @@
     <hr/><br/><br/><br/>
     <center>
         
+        {% for activity in uploaded %}
+            <div class="activity" style="text-align: left; padding-left:500px; padding-right:500px">
+                <p>{{ uploaded }}</p>
+            </div>
+        {% endfor %}
+
         {% for activity in activities %}
-            <p>{{ activity }}</p>
-            <form action="/upload" method="post">
-                <input type="submit" value="Upload"/>
-            </form>
+            <div class="activity" style="text-align: left; padding-left:500px; padding-right:500px">
+                <form action="/upload" method="post">
+                    <p><strong>{{ activity }}</strong></p>
+                    Name: <input autocomplete="off" autofocus name="name" placeholder="Activity name" type="text">
+                    Description: <input autocomplete="off" autofocus name="description" placeholder="Description" type="text">
+                    <select name="type">
+                        <option disable selected>Activity type</option>
+                        <option>Bike ride</option>
+                        <option>Run</option>
+                        <option>Walk</option>
+                    </select>
+                    <input type="submit" value="Upload"/>
+                    <br/><br/><hr/>
+                </form>
+            </div>      
         {% endfor %}
 
     </center>
