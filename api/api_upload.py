@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, Blueprint
+from flask import render_template, Blueprint
 from app import config
 import requests
 import os
