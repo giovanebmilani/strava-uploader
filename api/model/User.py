@@ -1,4 +1,4 @@
 
 
 class User:
-  pass
+	pass
