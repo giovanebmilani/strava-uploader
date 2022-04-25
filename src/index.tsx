@@ -1,4 +1,11 @@
 import ReactDOM from "react-dom";
-import { App } from "./App";
+import { AuthProvider } from "./providers/auth/AuthProvider";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+import { AppRoutes } from "./routes/AppRoutes";
+
+ReactDOM.render(
+  <AuthProvider>
+    <AppRoutes />
+  </AuthProvider>,
+  document.getElementById("root")
+)

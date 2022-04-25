@@ -1,12 +1,18 @@
+import React from 'react'
+import { Outlet } from 'react-router-dom'
+import { AuthInit } from './providers/auth/AuthProvider'
+
 import { GlobalStyle } from './styles/GlobalStyle'
 
-import { Greetings } from './components/Greetings'
-
-export function App() {
+const App = () => {
   return (
     <>
-      <GlobalStyle />
-      <Greetings />
+      <AuthInit>
+        <GlobalStyle/>
+        <Outlet/>
+      </AuthInit>    
     </>
   )
 }
+
+export { App }
